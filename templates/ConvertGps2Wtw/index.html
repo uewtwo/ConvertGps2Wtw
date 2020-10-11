@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ConvertGps2Wtw</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <script src="https://assets.what3words.com/sdk/v3/what3words.js?key={{ WHAT3WORDS_KEY }}"></script>
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_API_KEY }}&callback=initMap&libraries=&v=weekly"
+      defer
+    ></script>
+    <style type="text/css">
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+
+      /* Optional: Makes the sample page fill the window. */
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <script async>
+      var map
+      let def_lat = 35.667516
+      let def_lng = 139.750249
+      let test_3wa = 'きまる・ずしき・どこまで'
+
+      function CenterControl(controlDiv, map) {
+        // Set CSS for the control border.
+        var controlUI = document.createElement('div');
+        controlUI.style.backgroundColor = '#fff';
+        controlUI.style.border = '2px solid #fff';
+        controlUI.style.borderRadius = '3px';
+        controlUI.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
+        controlUI.style.cursor = 'pointer';
+        controlUI.style.marginBottom = '22px';
+        controlUI.style.textAlign = 'center';
+        controlUI.title = 'Click to recenter the map';
+        controlDiv.appendChild(controlUI);
+
+        // Set CSS for the control interior.
+        var controlText = document.createElement('div');
+        controlText.style.color = 'rgb(25,25,25)';
+        controlText.style.fontFamily = 'Roboto,Arial,sans-serif';
+        controlText.style.fontSize = '16px';
+        controlText.style.lineHeight = '38px';
+        controlText.style.paddingLeft = '5px';
+        controlText.style.paddingRight = '5px';
+        controlText.innerHTML = 'Current Location Search';
+        controlUI.appendChild(controlText);
+
+        const options = {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0
+        }
+
+        function success(pos) {
+          const crd = pos.coords
+          convertTo3wa(crd.latitude, crd.longitude)
+        }
+
+        function error(err) {
+          console.warn(`ERROR(${err.code}): ${err.message}`)
+        }
+
+        controlUI.addEventListener('click', function() {
+           navigator.geolocation.getCurrentPosition(success)
+        })
+      }
+
+      function initMap() {
+        map = new google.maps.Map(document.getElementById("map"), {
+          center: { lat: def_lat, lng: def_lng },
+          zoom: 16,
+        })
+        var centerControlDiv = document.createElement('div');
+        var centerControl = new CenterControl(centerControlDiv, map);
+
+        centerControlDiv.index = 1;
+        map.controls[google.maps.ControlPosition.TOP_CENTER].push(centerControlDiv);
+
+        convertTo3wa(def_lat, def_lng)
+      }
+
+      function convertTo3wa(lat, lng) {
+        //TODO: async await 難しすぎる
+        what3words.api.convertTo3wa({lat: lat, lng: lng}, language = 'ja')
+                .then(function(response) {
+          setMarker(lat, lng, response['words'])
+        })
+      }
+
+      function setMarker(lat, lng, w3wa) {
+        const tarUrl = `https://what3words.com/${w3wa}/`
+        const contentString =
+          '<div id="content">' +
+          '<div id="siteNotice">' +
+          "</div>" +
+          `<h1 id="firstHeading" class="firstHeading">What3Words: ${w3wa}</h1>` +
+          '<div id="bodyContent">' +
+          `<center><a href="${tarUrl}">What3Words Official Map</a></center>` +
+          "</div>" +
+          "</div>"
+        console.log(contentString)
+        let infoWindow = new google.maps.InfoWindow({
+          content: contentString
+        })
+        let marker = new google.maps.Marker({
+          position: {lat: lat, lng: lng},
+          map: map
+        })
+
+        bindInfoWindow(marker, map, infoWindow)
+      }
+
+      function bindInfoWindow(marker, map, infowindow) {
+        marker.addListener('click', function() {
+          infowindow.open(map, this)
+        })
+
+        infowindow.open(map, marker)
+      }
+    </script>
+  </head>
+  <body>
+    <div id="map"></div>
+  </body>
+</html>
