@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'easy_maps',
 ]
 
 MIDDLEWARE = [
@@ -131,3 +132,7 @@ MEDIA_ROOT = '/home/yt1n4/ConvertGps2Wtw/media'
 MEDIA_URL = '/media/'
 STATIC_ROOT = '/home/yt1n4/ConvertGps2Wtw/static'
 STATIC_URL = '/static/'
+
+
+# easy map config
+EASY_MAPS_CENTER = (35.6677828,139.7501735)
