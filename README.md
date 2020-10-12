@@ -1,16 +1,19 @@
 # ConvertGps2Wtw
-This app is deployed using Pythonanywhere.
-
+## About
+現在地座標を What3Words の3ワードに変換して、Googleマップのピンとして表示するアプリ  
+This web app is converting your current location into What3Words's 3 words and pinning it to Google Maps.  
+  
+This app is deployed using Pythonanywhere.  
 https://yt1n4.pythonanywhere.com/
 
-# Application Image
+## Application Image
 ![application_image](https://user-images.githubusercontent.com/20642652/95697420-a1cbdb80-0c79-11eb-9395-b745aa237b71.png)
 
-# Environment
+## Environment
 - python: 3.8
 - Django: >=2.2
 
-# Set up
+## Set up
 1. Create file.  
     `ConvertGps2Wtw/local_settings.py`
 1. Write the following.
